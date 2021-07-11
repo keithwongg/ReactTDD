@@ -16,10 +16,30 @@ class Timer extends Component {
   }
 
   startTimer() {
+      if (this.state.isOn === true){return;}
+      this.myInterval = setInterval(() => {
+          const {seconds, minutes} = this.state;
+          if (seconds > 0){
+              this.setState(({seconds}) => ({
+                  seconds: seconds - 1,
+              }));
+          }
+          if (seconds === 0){
+              if(minutes === 0){
+                  clearInterval(this.myInterval);
+              } else {
+                  this.setState(({minutes}) => ({
+                      minutes: minutes - 1,
+                      seconds: 59,
+                  }));
+              }
+          }
+      }, 1000);
     this.setState((state, props) => {return {isOn: true}});
   }
 
   stopTimer() {
+      clearInterval(this.myInterval);
     this.setState((state, props) => {return {isOn: false}});
   }
 
@@ -34,9 +54,13 @@ class Timer extends Component {
   }
 
   render = () => {
+      const {minutes, seconds} = this.state;
+
       return (
         <div className="timer-container">
-            <div className="time-display"></div>
+            <div className="time-display">
+                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            </div>
             <div className="time-button-container">
                 <TimerButton className="start-timer" buttonAction={this.startTimer} buttonValue={"Start"}/>
                 <TimerButton className="stop-timer" buttonAction={this.stopTimer} buttonValue={"Stop"}/>
